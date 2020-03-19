@@ -1,0 +1,97 @@
+* {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+.main {
+    text-align: center;
+}
+
+.main table {
+    margin: auto;
+}
+
+table {
+    border-spacing: 3px;
+}
+
+table td {
+    width: 33px;
+    height: 33px;
+    background-color: #bdc3c7;
+    text-align: center;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.marked {
+    background-color: #3498db;
+    border: none;
+    color: white;
+}
+
+.hints {
+    display: inline-block;
+}
+
+.hints li {
+    list-style: none;
+    display: inline-block;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.hints li img:hover {
+    width: 75px;
+}
+
+.mood {
+    width: 10%;
+    background-color: #ecf0f1;
+    padding: 10px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.mood img {
+    cursor: pointer;
+}
+
+.help {
+    width: 53%;
+    background-color: #ecf0f1;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 10px auto;
+}
+
+button {
+    border: none;
+    background-color: #3498db;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+    width: 18%;
+    height: 35px;
+    border-radius: 10px;
+    font-size: .9rem;
+    transition: .5s;
+}
+
+button:hover {
+    background-color: #3867d6;
+    width: 20%;
+}
+
+.timer {
+    background-color: #e74c3c;
+    color: white;
+    width: 20%;
+    padding: 8px;
+    margin: 15px auto;
+    border-radius: 5px;
+}
+
+.timer span {
+    font-weight: bold;
+}
