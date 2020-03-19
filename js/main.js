@@ -32,7 +32,7 @@ function hint(element) {
 function checkGameOver(i, j) {
     var elSmiley = document.querySelector('.smiley');
     // Lose!
-    if (gBoard[i][j].value === MINE) {
+    if (gBoard[i][j].lastValue === MINE) {
         gGameIsOn = false;
         clearInterval(gInterval);
         elSmiley.src = 'pics/lose.png';
@@ -44,8 +44,8 @@ function checkGameOver(i, j) {
 
     // Win!
     if (gShowCount === (gSize ** 2) - gMineCount &&
-        gBoard[i][j].value !== MINE &&
-        gBoard[i][j].value !== FLAG) {
+        gBoard[i][j].lastValue !== MINE &&
+        gBoard[i][j].lastValue !== FLAG) {
         gGameIsOn = false;
         clearInterval(gInterval);
         elSmiley.src = 'pics/win.png';
@@ -70,6 +70,8 @@ function restartGame(element) {
     gShowCount = 0;
     gHintsCounter = 3;
     renderHint();
+    var elHelp = document.querySelector('.help');
+    elHelp.innerHTML = `<span style="font-size: 32px; font-weight: bold; color: #2ecc71">It's a new game!</span>`;
 }
 
 // Set The Level Of The Game
@@ -96,6 +98,7 @@ function timer() {
 // If Right Click - FLAG
 function flagCell(event, element) {
     if (!gGameIsOn) return;
+    if (gClickedCounter === 0) return;
 
     var cellClickedClass = getCellSep(element.classList[1]);
     var cellClicked = gBoard[cellClickedClass.i][cellClickedClass.j];
@@ -105,7 +108,6 @@ function flagCell(event, element) {
     if (gBoard[cellSep.i][cellSep.j].isShown) return;
 
     if (event.button === 2 && cellClicked.value !== FLAG) {
-        if (gClickedCounter === 0) timer();
 
         gBoard[cellClickedClass.i][cellClickedClass.j].value = FLAG;
 
@@ -116,7 +118,7 @@ function flagCell(event, element) {
 
     // If Right Clicked And There Is Already A Flag
     if (event.button === 2 && cellClicked.value === FLAG) {
-        gBoard[cellClickedClass.i][cellClickedClass.j].value = '';
+        gBoard[cellClickedClass.i][cellClickedClass.j].value = gBoard[cellClickedClass.i][cellClickedClass.j].lastvalue;
         renderCell({ i: cellClickedClass.i, j: cellClickedClass.j }, '');
     }
 }

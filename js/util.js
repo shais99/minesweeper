@@ -3,7 +3,7 @@ function renderBoard(mat, selector) {
     for (var i = 0; i < mat.length; i++) {
         strHTML += `<tr>`;
         for (var j = 0; j < mat[0].length; j++) {
-            var cell = (mat[i][j].isShown) ? mat[i][j].value : ''
+            var cell = (mat[i][j].isShown) ? mat[i][j].lastValue : ''
             var className = `cell cell-${i}-${j}`;
             strHTML += `<td onmousedown="flagCell(event, this)" onclick="cellClicked(this, ${i}, ${j})" class="${className}">${cell}</td>`;
         }
