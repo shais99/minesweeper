@@ -1,57 +1,67 @@
 'use strict';
 const MINE = '💣';
 const FLAG = '🚩';
+const EMPTY = '';
 
 // Global Variables
-var gSize = 4;
 var gBoard;
 var gClickedCounter = 0;
 var gInterval;
-var gGameIsOn = true;
-var gMineCount = 2;
-var gShowCount = 0;
 var gHintsCounter = 3;
 var gCellIFirst;
 var gCellJFirst;
 var gHintUse = false;
+var gHintCells = [];
+var gLevel = {
+    size: 4,
+    mines: 2
+}
+var gGame = {
+    isOn: true,
+    shownCount: 0,
+    markedCount: 0,
+}
 
 // Init The Game
 function initGame() {
-    buildBoard(gSize);
+    buildBoard(gLevel.size);
     renderBoard(gBoard, '.content');
     renderHint();
 }
 
 function hint(element) {
-    if (!gGameIsOn) return;
+    if (!gGame.isOn) return;
+    if (gClickedCounter === 0) return;
+
     element.style.display = 'none';
     gHintUse = true;
 }
 
 // Check If Game Is Over (Lose Or Win)
 function checkGameOver(i, j) {
+
     var elSmiley = document.querySelector('.smiley');
+    var elHelp = document.querySelector('.help');
+
     // Lose!
     if (gBoard[i][j].lastValue === MINE) {
-        gGameIsOn = false;
+        gGame.isOn = false;
         clearInterval(gInterval);
         elSmiley.src = 'pics/lose.png';
         var audioLose = new Audio('sound/lose.mp3');
         audioLose.play();
-        var elHelp = document.querySelector('.help');
         elHelp.innerHTML = `<span style="font-size: 32px; font-weight: bold; color: #e74c3c">YOU LOSE!</span>`;
     }
 
     // Win!
-    if (gShowCount === (gSize ** 2) - gMineCount &&
+    if (gGame.shownCount === (gLevel.size ** 2) - gLevel.mines &&
         gBoard[i][j].lastValue !== MINE &&
         gBoard[i][j].lastValue !== FLAG) {
-        gGameIsOn = false;
+        gGame.isOn = false;
         clearInterval(gInterval);
         elSmiley.src = 'pics/win.png';
         var audioWin = new Audio('sound/win.mp3');
         audioWin.play();
-        var elHelp = document.querySelector('.help');
         elHelp.innerHTML = `<span style="font-size: 32px; font-weight: bold; color: #2ecc71">YOU WON!</span>`;
     }
 
@@ -61,29 +71,29 @@ function checkGameOver(i, j) {
 function restartGame(element) {
     var elSmiley = document.querySelector('.smiley');
     elSmiley.src = 'pics/normal.png';
-    gGameIsOn = true;
-    buildBoard(gSize);
+    gGame.isOn = true;
+    buildBoard(gLevel.size);
     renderBoard(gBoard, '.content');
     gClickedCounter = 0;
     clearInterval(gInterval);
     document.querySelector('.timer span').innerText = '0';
-    gShowCount = 0;
+    gGame.shownCount = 0;
     gHintsCounter = 3;
     renderHint();
     var elHelp = document.querySelector('.help');
-    elHelp.innerHTML = `<span style="font-size: 32px; font-weight: bold; color: #2ecc71">It's a new game!</span>`;
+    elHelp.innerHTML = `<span style="font-size: 32px; font-weight: bold; color: #3498db">It's a new game!</span>`;
 }
 
 // Set The Level Of The Game
 function setLevel(element) {
-    gSize = element.className;
+    gLevel.size = element.className;
     restartGame()
     if (element.classList.contains('4')) {
-        gMineCount = 2;
+        gLevel.mines = 2;
     } else if (element.classList.contains('8')) {
-        gMineCount = 12;
+        gLevel.mines = 12;
     } else if (element.classList.contains('12')) {
-        gMineCount = 30;
+        gLevel.mines = 30;
     }
 }
 
@@ -97,7 +107,7 @@ function timer() {
 
 // If Right Click - FLAG
 function flagCell(event, element) {
-    if (!gGameIsOn) return;
+    if (!gGame.isOn) return;
     if (gClickedCounter === 0) return;
 
     var cellClickedClass = getCellSep(element.classList[1]);
@@ -119,7 +129,7 @@ function flagCell(event, element) {
     // If Right Clicked And There Is Already A Flag
     if (event.button === 2 && cellClicked.value === FLAG) {
         gBoard[cellClickedClass.i][cellClickedClass.j].value = gBoard[cellClickedClass.i][cellClickedClass.j].lastvalue;
-        renderCell({ i: cellClickedClass.i, j: cellClickedClass.j }, '');
+        renderCell({ i: cellClickedClass.i, j: cellClickedClass.j }, EMPTY);
     }
 }
 
@@ -130,60 +140,73 @@ function closeHint(cellI, cellJ, elCell) {
             if (j < 0 || j >= gBoard.length || i < 0 || i >= gBoard.length) continue;
             if (i === cellI && j === cellJ) continue;
 
-            // var clickedClassName = 
             var className = getClassName({ i: i, j: j })
             var elClass = document.querySelector('.' + className)
 
-            if (gBoard[i][j].value !== FLAG) {
-                gBoard[cellI][cellJ].isShown = false;
-                gBoard[i][j].isShown = false;
-                elClass.classList.remove('marked');
-                elCell.classList.remove('marked');
-                elClass.innerText = '';
-                elCell.innerText = '';
-                renderCell({ i: i, j: j }, '')
-            }
 
+            gBoard[cellI][cellJ].isShown = false;
+            gBoard[i][j].isShown = false;
+
+            elClass.classList.remove('marked');
+            elCell.classList.remove('marked');
+
+            elClass.innerText = EMPTY;
+            elCell.innerText = EMPTY;
         }
     }
+
+    // Setting back to true for the cells that were true before
+    for (var i = 0; i < gHintCells.length; i++) {
+
+        var currI = gHintCells[i].i;
+        var currJ = gHintCells[i].j;
+        gBoard[currI][currJ].isShown = true;
+
+        var className = getClassName({ i: currI, j: currJ })
+        var elClass = document.querySelector('.' + className)
+
+        elClass.classList.add('marked');
+
+        renderCell({ i: currI, j: currJ }, gBoard[currI][currJ].lastValue);
+
+    }
+    gGame.shownCount--;
+    gHintCells = []
 }
 
 // If Cell Clicked Function
 function cellClicked(elCell, i, j) {
-    if (!gGameIsOn) return;
+
+    if (!gGame.isOn) return;
     if (gBoard[i][j].value === FLAG) return;
     if (gBoard[i][j].isShown) return;
-
-    if (!gHintUse) checkGameOver(i, j);
 
     if (gHintUse) {
         expandShown(i, j);
         setTimeout(closeHint, 2000, i, j, elCell)
-        gHintUse = false;
     }
 
     if (gClickedCounter === 0) {
         timer();
         gCellIFirst = i;
         gCellJFirst = j;
-        setRandomMine(gMineCount, gCellIFirst, gCellJFirst);
+        setRandomMine(gLevel.mines, gCellIFirst, gCellJFirst);
         setMinesNegsCount(gBoard);
     }
 
-    if (!gBoard[i][j].value) {
+    if (!gBoard[i][j].lastValue && !gHintUse) {
         expandShown(i, j)
     }
     gClickedCounter++;
 
     gBoard[i][j].isShown = true;
     elCell.classList.add('marked');
-    elCell.innerText = gBoard[i][j].lastValue;
+    renderCell({ i: i, j: j }, gBoard[i][j].lastValue);
 
-    if (gHintUse) gShowCount++;
-    else {
-        gShowCount++;
-        checkGameOver(i, j);
-    }
+    gGame.shownCount++;
+    if (!gHintUse) checkGameOver(i, j);
+    gHintUse = false;
+
 }
 
 function expandShown(cellI, cellJ) {
@@ -192,35 +215,39 @@ function expandShown(cellI, cellJ) {
             if (j < 0 || j >= gBoard.length || i < 0 || i >= gBoard.length) continue;
             if (i === cellI && j === cellJ) continue;
 
-            if (gBoard[i][j].value === MINE && !gHintUse) continue;
+            if (gBoard[i][j].lastValue === MINE && !gHintUse) continue;
+
+            if (gHintUse && gBoard[i][j].isShown) {
+                gHintCells.push({ i: i, j: j });
+            }
 
             var className = getClassName({ i: i, j: j });
             var elClass = document.querySelector('.' + className);
 
-            if (gBoard[i][j].value !== FLAG && gBoard[i][j].value !== MINE) {
-                if (!gBoard[i][j].isShown && !gHintUse) gShowCount++;
-                gBoard[i][j].isShown = true;
-                elClass.classList.add('marked');
-                elClass.innerText = gBoard[i][j].value;
-                renderCell({ i: i, j: j }, gBoard[i][j].value);
-            }
+            // if (gBoard[i][j].lastValue !== MINE) {
+            if (!gBoard[i][j].isShown && !gHintUse) gGame.shownCount++;
+
+            gBoard[i][j].isShown = true;
+            elClass.classList.add('marked');
+
+            renderCell({ i: i, j: j }, gBoard[i][j].lastValue);
+            // }
 
         }
     }
 }
 
-// MINE HERE - ONLY FOR ME...
-
 // Build board function
 function buildBoard() {
     gBoard = [];
-    for (var i = 0; i < gSize; i++) {
+    for (var i = 0; i < gLevel.size; i++) {
         gBoard.push([]);
-        for (var j = 0; j < gSize; j++) {
+        for (var j = 0; j < gLevel.size; j++) {
             gBoard[i][j] = {
-                value: '',
-                lastValue: '',
-                isShown: false
+                value: EMPTY,
+                lastValue: EMPTY,
+                isShown: false,
+                isHint: false
             };
         }
     }

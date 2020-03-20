@@ -55,6 +55,7 @@ table td {
 
 .mood img {
     cursor: pointer;
+    max-width: 50px;
 }
 
 .help {

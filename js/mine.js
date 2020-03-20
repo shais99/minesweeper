@@ -20,8 +20,8 @@ function setMinesNegsCount(board) {
             gBoard[i][j].lastValue = mineCounter;
 
             if (gBoard[i][j].value === 0) {
-                gBoard[i][j].value = '';
-                gBoard[i][j].lastValue = '';
+                gBoard[i][j].value = EMPTY;
+                gBoard[i][j].lastValue = EMPTY;
             }
 
             // Update the DOM
