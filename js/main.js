@@ -217,16 +217,16 @@ function setLevel(element) {
     } else if (element.classList.contains('manually')) {
         gManuallyMode.isOn = true;
         while (isNaN(gManuallyMode.boardSize) ||
-        gManuallyMode.boardSize === null ||
-        gManuallyMode.boardSize === 0) {
+            gManuallyMode.boardSize === null ||
+            gManuallyMode.boardSize < 2) {
             gManuallyMode.boardSize = +prompt('What is your board size?');
         }
 
         while (isNaN(gManuallyMode.numOfMine) ||
             gManuallyMode.numOfMine === null ||
             gManuallyMode.numOfMine > (gManuallyMode.boardSize ** 2)) {
-
             gManuallyMode.numOfMine = +prompt('How many mines do you want?');
+            if (gManuallyMode.numOfMine >= 2 && gManuallyMode.boardSize === 2) gManuallyMode.numOfMine = null;
         }
 
         gLevel.size = gManuallyMode.boardSize;
