@@ -12,20 +12,27 @@
     <div class="main">
         <div class="mood">
             This is you:<br />
-            <img src="pics/normal.png" onclick="restartGame()" class="smiley" />
+            <img src="pics/normal.png" onclick="restartGame()" class="smiley" /><br />
+            <span class="life-count"></span>
         </div>
-        <ul class="hints">
-        </ul>
+        <div class="header-right">
+            <ul class="hints"></ul>
+            <div class="timer">The timer is: <span>0</span></div>
+        </div>
         <div class="help">
             You have 3 hints per game, If you need help.<br />
             If you want to restart the game, click on your face
         </div>
+        <div class="best-score-area">
+            The best score is: <span class="best-score"></span>
+        </div>
         <div class="levels">
             <button class="4" onclick="setLevel(this)">Beginner</button>
-            <button class="8" onclick="setLevel(this)">Medium</button>
+            <button class="8" onclick="setLevel(this)">Medium</button><br />
             <button class="12" onclick="setLevel(this)">Expert</button>
+            <button class="manually" onclick="setLevel(this)">Manually</button>
         </div>
-        <div class="timer">The timer is: <span>0</span></div>
+        <ul class="safe-clicks"></ul>
         <div class="content"></div>
     </div>
     <script src="js/util.js"></script>

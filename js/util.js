@@ -17,12 +17,21 @@ function renderBoard(mat, selector) {
 // Render Hint Function
 function renderHint() {
     var elHint = document.querySelector('.hints');
-    var strHTML = `<li>`
+    var strHTML = ``
     for (; gHintsCounter > 0; gHintsCounter--) {
         strHTML += `<li onclick="hint(this)"><img src="pics/hint.png" /></li>`
     }
-    strHTML += `</li>`
     elHint.innerHTML = strHTML;
+}
+
+// Render Safe Click Function
+function renderSafeClick() {
+    var elSafeClick = document.querySelector('.safe-clicks');
+    var strHTML = ``
+    for (; gSafeClickCounter > 0; gSafeClickCounter--) {
+        strHTML += `<li onclick="safeClick(this)"></li>`;
+    }
+    elSafeClick.innerHTML = strHTML;
 }
 
 // Render Cell Function
